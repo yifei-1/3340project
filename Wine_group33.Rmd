@@ -1,0 +1,130 @@
+---
+title: "Regression analysis - winequality data- group 33"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## import data from csv file and make pairs plot for the data
+```{r}
+redwine <- read.csv(file="winequality-red.csv", sep=";")
+whitewine <- read.csv(file="winequality-white.csv", sep=";")
+
+pairs(dataset, main="red wine")
+pairs(dataset, main="white wine")
+
+```
+## Loading libraries 
+```{r}
+install.packages("corrplot")
+install.packages("Hmisc")
+install.packages("MPV")
+install.packages("faraway")
+library(corrplot)
+library(Hmisc)
+library(MPV)
+library(faraway)
+str(dataset)
+
+```
+
+
+##Introducing a new data point to our data
+
+```{r}
+red <- rbind(dataset,c(8.32,0.5278,0.271,2.539,0.0874,15.87,46.47,0.9967,3.311,0.6581,10.42,6))
+str(red)
+white <- rbind(dataset,c(0.528,0.2471,2.77,8.21,0.9967,3.311,0.6581,0.0874,15.87,46.47,132,6.11))
+str(white)
+
+```
+
+## take summary of the data.
+
+```{r}
+summary(red[,1:11])
+summary(white[,1:11])
+
+```
+
+
+##make Box-Plot for all the independent variables for red wine by quanlity.
+
+```{r pressure, echo=FALSE}
+boxplot(volatile.acidity~quality, data= red)
+boxplot(chlorides~quality, data= red)
+boxplot(free.sulfur.dioxide~quality, data= red)
+boxplot(total.sulfur.dioxide~quality, data= red)
+boxplot(sulphates~quality, data= red)
+boxplot(alcohol~quality, data= red)
+
+```
+##Box-Plot for white wine
+
+```{r pressure, echo=FALSE}
+boxplot(volatile.acidity~quality, data= white)
+boxplot(chlorides~quality, data= white)
+boxplot(free.sulfur.dioxide~quality, data= white)
+boxplot(total.sulfur.dioxide~quality, data= white)
+boxplot(sulphates~quality, data= white)
+boxplot(alcohol~quality, data= white)
+
+```
+
+## Correlation Matrix 
+
+```{r}
+res <- rcorr(as.matrix(dataset[,1:11]))
+res$P
+
+corrplot( res$r, type="upper", p.mat=res$p, sig.level=0.01)
+
+```
+
+
+##Fi a linear regression on all the variables for red wine and take vif score
+```{r}
+lm1 <- lm( quality~fixed.acidity+volatile.acidity+citric.acid+residual.sugar+chlorides+free.sulfur.dioxide+total.sulfur.dioxide+density+pH+sulphates+alcohol, data= red)
+summary(lm1)
+vif(lm1)
+plot(lm1)
+```
+
+
+#Fit the linear regression model based on the significant variables for red wine.
+
+```{r}
+lm2 <- lm( quality~volatile.acidity+chlorides+free.sulfur.dioxide+total.sulfur.dioxide +pH+sulphates+alcohol, data= red)
+summary(lm2)
+vif(lm2)
+
+plot(lm2)
+```
+
+```{r}
+vif(lm1,lm2)
+```
+
+##Fit a linear regression on all the variables for white wine
+```{r}
+lm11 <- lm( quality~fixed.acidity+volatile.acidity+citric.acid+residual.sugar+chlorides+free.sulfur.dioxide+total.sulfur.dioxide+density+pH+sulphates+alcohol, data= white)
+summary(lm11)
+vif(lm11)
+plot(lm11)
+```
+
+
+##Fit the linear regression model based on the significant variables for white wine.
+
+```{r}
+lm2 <- lm( quality~volatile.acidity+chlorides+free.sulfur.dioxide+total.sulfur.dioxide +pH+sulphates+alcohol, data= white)
+summary(lm22)
+vif(lm22)
+plot(lm22)
+```
+
+```{r}
+vif(lm11,lm22)
+```
