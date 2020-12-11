@@ -1,0 +1,96 @@
+---
+title: "Regression analysis - winequality data- group 33"
+author:"Chu Yifei(B00765157) Yasong Wang (B00756812) Ruming Liu (B00811402)" 
+output: html_document
+---
+
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+#importing our red wine data set and install libraries.
+
+```{r cars}
+install.packages("corrplot")
+install.packages("Hmisc")
+install.packages("MPV")
+install.packages("faraway")
+library(corrplot)
+library(Hmisc)
+library(MPV)
+library(faraway)
+str(dataset)
+
+dataset <- read.csv(file="winequality-red.csv", sep=";")
+str(dataset)
+
+```
+
+
+#Introducing a new point in the data set and summarizing it.
+
+```{r}
+
+wine_new <- rbind(redwine,c(8.32,0.5278,0.271,2.539,0.0874,15.87,46.47,0.9967,3.311,0.6581,10.42,6))
+str(wine_new)
+
+```
+
+
+```{r}
+pairs(wine_new)
+summary(wine_new[,1:11])
+```
+
+
+#make Box-Plot for all variables
+
+```{r pressure, echo=FALSE}
+boxplot(volatile.acidity~quality, data= wine_new)
+boxplot(chlorides~quality, data= wine_new)
+boxplot(free.sulfur.dioxide~quality, data= wine_new)
+boxplot(total.sulfur.dioxide~quality, data= wine_new)
+boxplot(sulphates~quality, data= wine_new)
+boxplot(alcohol~quality, data= wine_new)
+
+```
+
+
+```{r}
+boxplot(density~quality, data= wine_new)
+boxplot(fixed.acidity~quality, data= wine_new)
+boxplot(citric.acid~quality, data= wine_new)
+boxplot(residual.sugar~quality, data= wine_new)
+boxplot(pH~quality, data= wine_new)
+```
+
+
+
+# make Correlation Matrix and Plot our graph
+
+```{r}
+res <- rcorr(as.matrix(dataset[,1:11]))
+res$P
+
+corrplot( res$r, type="upper", p.mat=res$p, sig.level=0.01)
+
+```
+
+
+#Fit a linear regression for all the variables.
+```{r}
+lm1 <- lm( quality~fixed.acidity+volatile.acidity+citric.acid+residual.sugar+chlorides+free.sulfur.dioxide+total.sulfur.dioxide+density+pH+sulphates+alcohol, data= wine_new)
+summary(lm1)
+```
+
+
+#then fitting another linear regression model for significant variables.
+
+```{r}
+lm2 <- lm( quality~volatile.acidity+chlorides+free.sulfur.dioxide+total.sulfur.dioxide +pH+sulphates+alcohol, data= wine_new)
+summary(lm2)
+
+plot(lm2)
+```
